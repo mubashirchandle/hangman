@@ -1,4 +1,5 @@
 import pygame
+import math
 import os
 
 # Colors
@@ -62,7 +63,14 @@ while run:
         if event.type == pygame.QUIT:
             run = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            pos = pygame.mouse.get_pos()
-            print(pos)
+            cur_x, cur_y = pygame.mouse.get_pos()
+
+            for letter_pos in letters_pos:
+                letter_x, letter_y, letter = letter_pos
+
+                # Use the equation of circle (A^2 + B^2 = R^2) to find when a particular button is clicked.
+                distance = math.sqrt(((cur_x - letter_x) ** 2) + ((cur_y - letter_y) ** 2))
+                if distance <= RADIUS:
+                    print(letter)
 
 pygame.quit()
