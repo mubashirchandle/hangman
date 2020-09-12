@@ -24,7 +24,10 @@ letters_pos = []
 for i in range(26):
     x = round(START_X + ((RADIUS * 2 + GAP) * (i % 13)))
     y = round(START_Y + ((RADIUS * 2 + GAP) * (i // 13)))
-    letters_pos.append((x, y))
+    letters_pos.append((x, y, chr(ord('A') + i)))
+
+# Fonts
+LETTER_FONT = pygame.font.SysFont('comicsans', 40)
 
 # Game variables
 hangman_status = 0
@@ -39,8 +42,10 @@ def draw():
 
     # Draw alphabet buttons
     for letter_pos in letters_pos:
-        x, y = letter_pos
+        x, y, letter = letter_pos
         pygame.draw.circle(win, BLACK, (x, y), RADIUS, 3)
+        text = LETTER_FONT.render(letter, 1, BLACK)
+        win.blit(text, (x - text.get_width() / 2, y - text.get_height() / 2))
 
     # Replace existing hangman image with new one.
     win.blit(images[hangman_status], (150, 100))
