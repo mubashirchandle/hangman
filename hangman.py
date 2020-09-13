@@ -33,18 +33,12 @@ LETTER_FONT = pygame.font.SysFont('comicsans', 40)
 WORD_FONT = pygame.font.SysFont('comicsans', 60)
 TITLE_FONT = pygame.font.SysFont('comicsans', 70)
 
-# Game variables
-hangman_status = 0
 words = ['DEVELOPER', 'PYGAME', 'PYTHON', 'LINUX', 'VSCODE']
-WORD = random.choice(words)
-guessed = []
-
-# Setup game loop
 FPS = 60
 clock = pygame.time.Clock()
-run = True
 
-def draw():
+
+def draw(word, guessed, hangman_status):
     win.fill(WHITE)
 
     # Draw title
@@ -53,7 +47,7 @@ def draw():
 
     display_word = ''
     # Draw word
-    for letter in WORD:
+    for letter in word:
         if letter in guessed:
             display_word += letter + ' '
         else:
@@ -87,38 +81,57 @@ def display_message(message):
     pygame.time.delay(3000)
 
 
-while run:
-    clock.tick(FPS)
+def main():
+    # Game variables
+    hangman_status = 0
+    guessed = []
+    WORD = random.choice(words)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            cur_x, cur_y = pygame.mouse.get_pos()
+    # Reset visibility of all the buttons.
+    for letter_pos in letters_pos:
+        letter_pos[-1] = True
 
-            for letter_pos in letters_pos:
-                letter_x, letter_y, letter, visible = letter_pos
+    # Keep running until either the user wins, loses or closes the game.
+    while True:
+        clock.tick(FPS)
 
-                if not visible:
-                    continue
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                # Quit the game.
+                return False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                cur_x, cur_y = pygame.mouse.get_pos()
 
-                # Use the equation of circle (A^2 + B^2 = R^2) to find when a particular button is clicked.
-                distance = math.sqrt(((cur_x - letter_x) ** 2) + ((cur_y - letter_y) ** 2))
-                if distance <= RADIUS:
-                    letter_pos[-1] = False
-                    guessed.append(letter)
-                    if letter not in WORD:
-                        hangman_status += 1
+                for letter_pos in letters_pos:
+                    letter_x, letter_y, letter, visible = letter_pos
 
-    draw()
+                    if not visible:
+                        continue
 
-    # If user guessed all the letters correct.
-    if set(WORD).issubset(guessed):
-        display_message('You WON!')
-        break
+                    # Use the equation of circle (A^2 + B^2 = R^2) to find when a particular button is clicked.
+                    distance = math.sqrt(((cur_x - letter_x) ** 2) + ((cur_y - letter_y) ** 2))
+                    if distance <= RADIUS:
+                        letter_pos[-1] = False
+                        guessed.append(letter)
+                        if letter not in WORD:
+                            hangman_status += 1
 
-    if hangman_status == 6:
-        display_message('You LOST :(')
-        break
+        draw(WORD, guessed, hangman_status)
 
+        # If user guessed all the letters correct.
+        if set(WORD).issubset(guessed):
+            display_message('You WON!')
+            break
+
+        if hangman_status == 6:
+            display_message('You LOST :(')
+            break
+
+    # Return `True` to allow the game to be re-run.
+    return True
+
+
+# Keep running the program until the user presses the close/quit button on the main window.
+while main():
+    pass
 pygame.quit()
