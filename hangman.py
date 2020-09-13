@@ -113,7 +113,7 @@ while run:
     draw()
 
     # If user guessed all the letters correct.
-    if set(WORD) == set(guessed):
+    if set(WORD).issubset(guessed):
         display_message('You WON!')
         break
 
