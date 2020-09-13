@@ -13,7 +13,7 @@ WIDTH, HEIGHT = 800, 500
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 
 # Load images
-images = [pygame.image.load(f'images/hangman{i}.png') for i in range(6)]
+images = [pygame.image.load(f'images/hangman{i}.png') for i in range(7)]
 
 # Button variables
 RADIUS = 20
@@ -29,9 +29,12 @@ for i in range(26):
 
 # Fonts
 LETTER_FONT = pygame.font.SysFont('comicsans', 40)
+WORD_FONT = pygame.font.SysFont('comicsans', 60)
 
 # Game variables
 hangman_status = 0
+WORD = 'DEVELOPER'
+guessed = []
 
 # Setup game loop
 FPS = 60
@@ -40,6 +43,16 @@ run = True
 
 def draw():
     win.fill(WHITE)
+
+    display_word = ''
+    # Draw word
+    for letter in WORD:
+        if letter in guessed:
+            display_word += letter + ' '
+        else:
+            display_word += '_ '
+    text = WORD_FONT.render(display_word, 1, BLACK)
+    win.blit(text, (400, 200))
 
     # Draw alphabet buttons
     for letter_pos in letters_pos:
@@ -79,6 +92,8 @@ while run:
                 distance = math.sqrt(((cur_x - letter_x) ** 2) + ((cur_y - letter_y) ** 2))
                 if distance <= RADIUS:
                     letter_pos[-1] = False
-                    print(letter)
+                    guessed.append(letter)
+                    if letter not in WORD:
+                        hangman_status += 1
 
 pygame.quit()
